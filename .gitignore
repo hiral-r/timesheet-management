@@ -1,0 +1,7 @@
+/vendor
+/node_modules
+.env
+.DS_Store
+/form-filler/node_modules
+/form-filler/.chrome-profile
+/form-filler/last-error.png

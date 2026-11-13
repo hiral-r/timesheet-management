@@ -1,0 +1,12 @@
+{
+  "name": "timesheet-form-filler",
+  "private": true,
+  "type": "module",
+  "description": "Fills the Google timesheet form with Playwright using a saved Chrome login.",
+  "scripts": {
+    "login": "node login.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  }
+}
