@@ -3,7 +3,7 @@
 return [
 
     // Dropdown values (same as your Google Sheet). Edit freely.
-    'modules' => ['FlowPO', 'XOSP', 'QBSP', 'Shopify Admin', 'Session', 'Other', 'Meeting', 'R&D'],
+    'modules' => ['FlowPO', 'XOSP', 'QBSP', 'SHOPIFY ADMIN', 'Session', 'Other', 'Meeting', 'R&D', 'MMAPPS ADMIN','FLOWPO ADMIN'],
 
     'sources' => ['Jira', 'Verbal', 'Log-Error'],
 
@@ -61,8 +61,9 @@ return [
             'FlowPO' => 'FLOWPO',
             'XOSP' => 'XOSP',
             'QBSP' => 'QBSP',
-            'Shopify Admin' => 'SHOPIFY ADMIN',
-            'FLowpo Admin' => 'FLOWPO ADMIN',
+            'SHOPIFY ADMIN' => 'SHOPIFY ADMIN',
+            'FLOWPO ADMIN' => 'FLOWPO ADMIN',
+            'MMAPPS ADMIN' => 'MMAPPS ADMIN',
             'Session' => 'SESSION',
             'Other' => 'OTHER',
             'Meeting' => 'MEETING',

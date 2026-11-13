@@ -3,6 +3,12 @@ import { chromium } from 'playwright';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// Windows web servers (e.g. Apache/Laragon) omit user env vars, causing Playwright to check "undefined\Program Files".
+if (process.platform === 'win32') {
+    process.env.PROGRAMFILES = process.env.PROGRAMFILES || 'C:\\Program Files';
+    process.env.HOMEDRIVE = process.env.HOMEDRIVE || 'C:';
+}
+
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const PROFILE_DIR = process.env.FORM_PROFILE_DIR || path.join(here, '.chrome-profile');
 
