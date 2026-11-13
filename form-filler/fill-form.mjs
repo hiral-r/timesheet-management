@@ -32,27 +32,89 @@ function findItem(items, title) {
     return items.find((q) => q.title === t) || items.find((q) => q.title.startsWith(t));
 }
 
-async function answer(page, item, title, value) {
-    // Dropdown
-    const listbox = item.locator('[role="listbox"]');
-    if (await listbox.count()) {
-        await listbox.first().click();
-        const option = page.locator(`[role="option"][data-value="${cssValue(value)}"]:visible`).first();
+// YB - 13-11-2026 Resilient dropdown selection with scroll, opening retry, and normalized matching
+async function selectDropdownOption(page, item, title, value) {
+    const listbox = item.locator('[role="listbox"]').first();
+    if (!(await listbox.count())) return false;
+
+    await listbox.scrollIntoViewIfNeeded().catch(() => {});
+    await page.waitForTimeout(200);
+
+    // Open dropdown (retry if previous field blur/save intercepted the click)
+    for (let attempt = 0; attempt < 3; attempt++) {
+        const expanded = await listbox.getAttribute('aria-expanded');
+        if (expanded === 'true') break;
+
+        await listbox.click().catch(() => {});
         try {
-            await option.waitFor({ state: 'visible', timeout: 5000 });
+            await page.locator('[role="option"]:visible').first().waitFor({ state: 'visible', timeout: 1500 });
+            break;
         } catch {
-            await page.keyboard.press('Escape');
+            await page.waitForTimeout(200);
+        }
+    }
+
+    // 1. Try fast exact data-value match
+    let option = page.locator(`[role="option"][data-value="${cssValue(value)}"]:visible`).first();
+    let found = (await option.count()) > 0;
+
+    // 2. Fallback: match by normalized text / data-value (handles case differences & trailing spaces)
+    if (!found) {
+        const target = norm(value);
+        const allVisible = page.locator('[role="option"]:visible');
+        const count = await allVisible.count();
+        for (let i = 0; i < count; i++) {
+            const opt = allVisible.nth(i);
+            const val = norm((await opt.getAttribute('data-value')) || (await opt.innerText()));
+            if (val === target || val.startsWith(target)) {
+                option = opt;
+                found = true;
+                break;
+            }
+        }
+    }
+
+    if (!found) {
+        try {
+            await option.waitFor({ state: 'visible', timeout: 3000 });
+            found = true;
+        } catch {
+            await page.keyboard.press('Escape').catch(() => {});
             throw new Error(`Option "${value}" not found in "${title}"`);
         }
-        await option.click();
-        await page.waitForTimeout(500);
+    }
+
+    await option.scrollIntoViewIfNeeded().catch(() => {});
+    await page.waitForTimeout(100);
+    await option.click();
+    await page.waitForTimeout(400);
+    return true;
+}
+
+async function answer(page, item, title, value) {
+    // Dropdown
+    if (await selectDropdownOption(page, item, title, value)) {
         return;
     }
 
     // Multiple choice
     if (await item.locator('[role="radio"]').count()) {
-        const radio = item.locator(`[role="radio"][data-value="${cssValue(value)}"]`);
+        let radio = item.locator(`[role="radio"][data-value="${cssValue(value)}"]`);
+        if (!(await radio.count())) {
+            const allRadios = item.locator('[role="radio"]');
+            const rCount = await allRadios.count();
+            const target = norm(value);
+            for (let i = 0; i < rCount; i++) {
+                const r = allRadios.nth(i);
+                const rVal = norm((await r.getAttribute('data-value')) || (await r.getAttribute('aria-label')) || (await r.innerText()));
+                if (rVal === target || rVal.startsWith(target)) {
+                    radio = r;
+                    break;
+                }
+            }
+        }
         if (!(await radio.count())) throw new Error(`Choice "${value}" not found in "${title}"`);
+        await radio.first().scrollIntoViewIfNeeded().catch(() => {});
         await radio.first().click();
         return;
     }
@@ -60,6 +122,7 @@ async function answer(page, item, title, value) {
     // Short answer / paragraph / email
     const field = item.locator('textarea, input[type="text"], input[type="email"], input[type="url"], input:not([type])').first();
     if (!(await field.count())) throw new Error(`No input box found for "${title}"`);
+    await field.scrollIntoViewIfNeeded().catch(() => {});
     await field.fill(String(value ?? ''));
 }
 
