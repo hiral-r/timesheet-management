@@ -13,6 +13,7 @@ return [
     'project_modules' => [
         'FLOW' => 'FlowPO',
         'XOSP' => 'XOSP',
+        'SAA'  => 'SAA',
     ],
 
     // Jira issue type => Task type
@@ -61,6 +62,7 @@ return [
             'XOSP' => 'XOSP',
             'QBSP' => 'QBSP',
             'Shopify Admin' => 'SHOPIFY ADMIN',
+            'FLowpo Admin' => 'FLOWPO ADMIN',
             'Session' => 'SESSION',
             'Other' => 'OTHER',
             'Meeting' => 'MEETING',
