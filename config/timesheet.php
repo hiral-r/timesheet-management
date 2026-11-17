@@ -3,7 +3,7 @@
 return [
 
     // Dropdown values (same as your Google Sheet). Edit freely.
-    'modules' => ['FlowPO', 'XOSP', 'QBSP', 'SHOPIFY ADMIN', 'Session', 'Other', 'Meeting', 'R&D', 'MMAPPS ADMIN','FLOWPO ADMIN'],
+    'modules' => ['FlowPO', 'XOSP', 'QBSP', 'SHOPIFY ADMIN', 'Session', 'Other', 'Meeting', 'R&D', 'MMAPPS ADMIN','FLOWPO ADMIN', 'SHOPIFY SUMMARY'],
 
     'sources' => ['Jira', 'Verbal', 'Log-Error'],
 
@@ -14,6 +14,7 @@ return [
         'FLOW' => 'FlowPO',
         'XOSP' => 'XOSP',
         'SAA'  => 'SAA',
+        'QBSP' => 'QBSP'
     ],
 
     // Jira issue type => Task type
@@ -68,6 +69,7 @@ return [
             'Other' => 'OTHER',
             'Meeting' => 'MEETING',
             'R&D' => 'R&D',
+            'SHOPIFY SUMMARY' => 'SHOPIFY SUMMARY'
         ],
 
         // App Task type => form "Task Type" option
