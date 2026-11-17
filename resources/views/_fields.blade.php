@@ -11,7 +11,7 @@
     </div>
 
     <div>
-        <label for="work_date">Date</label>
+        <label for="work_date">Task Date</label>
         <input type="date" id="work_date" name="work_date" value="{{ old('work_date', $e?->work_date?->toDateString() ?? now()->toDateString()) }}" required>
     </div>
     <div>

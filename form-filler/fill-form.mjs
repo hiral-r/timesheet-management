@@ -91,6 +91,42 @@ async function selectDropdownOption(page, item, title, value) {
     return true;
 }
 
+// YB - 17-11-2026 Support filling date questions (native input[type="date"] or split day/month/year fields)
+async function fillDateField(item, title, value) {
+    const dateInput = item.locator('input[type="date"]').first();
+    if (await dateInput.count()) {
+        await dateInput.scrollIntoViewIfNeeded().catch(() => {});
+        let formatted = String(value).trim();
+        if (/^\d{2}-\d{2}-\d{4}$/.test(formatted)) {
+            const [d, m, y] = formatted.split('-');
+            formatted = `${y}-${m}-${d}`;
+        }
+        await dateInput.fill(formatted);
+        return true;
+    }
+
+    const dayInput = item.locator('input[aria-label*="Day" i]').first();
+    const monthInput = item.locator('input[aria-label*="Month" i]').first();
+    const yearInput = item.locator('input[aria-label*="Year" i]').first();
+    if ((await dayInput.count()) && (await monthInput.count()) && (await yearInput.count())) {
+        let y, m, d;
+        const str = String(value).trim();
+        if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+            [y, m, d] = str.split('-');
+        } else if (/^\d{2}-\d{2}-\d{4}$/.test(str)) {
+            [d, m, y] = str.split('-');
+        }
+        if (y && m && d) {
+            await dayInput.fill(d);
+            await monthInput.fill(m);
+            await yearInput.fill(y);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 async function answer(page, item, title, value) {
     // Dropdown
     if (await selectDropdownOption(page, item, title, value)) {
@@ -119,8 +155,13 @@ async function answer(page, item, title, value) {
         return;
     }
 
+    // Date
+    if (await fillDateField(item, title, value)) {
+        return;
+    }
+
     // Short answer / paragraph / email
-    const field = item.locator('textarea, input[type="text"], input[type="email"], input[type="url"], input:not([type])').first();
+    const field = item.locator('textarea, input[type="text"], input[type="date"], input[type="email"], input[type="url"], input:not([type])').first();
     if (!(await field.count())) throw new Error(`No input box found for "${title}"`);
     await field.scrollIntoViewIfNeeded().catch(() => {});
     await field.fill(String(value ?? ''));

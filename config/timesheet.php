@@ -13,7 +13,7 @@ return [
     'project_modules' => [
         'FLOW' => 'FlowPO',
         'XOSP' => 'XOSP',
-        'SAA'  => 'SAA',
+        'SAA'  => 'SHOPIFY ADMIN',
     ],
 
     // Jira issue type => Task type
@@ -49,6 +49,7 @@ return [
         // Form question titles (left side = what we send)
         'questions' => [
             'name' => 'Name',
+            'task_date' => 'Task Date',
             'module' => 'Module',
             'task_id' => 'Task ID',
             'description' => 'Task Description',

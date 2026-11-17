@@ -31,14 +31,22 @@ class GoogleFormService
             throw new RuntimeException('Time is 0:00 — nothing to submit.');
         }
 
-        return [
+        $answers = [
             $q['name'] => $cfg['name'],
-            $q['module'] => $module,
-            $q['task_id'] => (string) $entry->task_key,
-            $q['description'] => $entry->description,
-            $q['task_type'] => $type,
-            $q['hours'] => sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60),
         ];
+
+        // YB - 17-11-2026 Map work_date to form Task Date question (dd-mm-yyyy format)
+        if (! empty($q['task_date']) && $entry->work_date) {
+            $answers[$q['task_date']] = $entry->work_date->format('d-m-Y');
+        }
+
+        $answers[$q['module']] = $module;
+        $answers[$q['task_id']] = (string) $entry->task_key;
+        $answers[$q['description']] = $entry->description;
+        $answers[$q['task_type']] = $type;
+        $answers[$q['hours']] = sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60);
+
+        return $answers;
     }
 
     /**
