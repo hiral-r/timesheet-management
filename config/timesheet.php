@@ -13,7 +13,7 @@ return [
     'project_modules' => [
         'FLOW' => 'FlowPO',
         'XOSP' => 'XOSP',
-        'SAA'  => 'SAA',
+        'SAA'  => 'SHOPIFY ADMIN',
         'QBSP' => 'QBSP'
     ],
 
@@ -50,6 +50,7 @@ return [
         // Form question titles (left side = what we send)
         'questions' => [
             'name' => 'Name',
+            'task_date' => 'Task Date',
             'module' => 'Module',
             'task_id' => 'Task ID',
             'description' => 'Task Description',
@@ -83,6 +84,6 @@ return [
             'Research' => 'Research',        // form has no "Research" option — change if needed
             'Activity' => 'Activity',
             'Other' => 'Other',
-        ],        
+        ],
     ],
 ];
