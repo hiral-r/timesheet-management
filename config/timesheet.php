@@ -2,6 +2,9 @@
 
 return [
 
+    // Your employee code (e.g. 01). Each person sets TIMESHEET_USER in their own .env.
+    'user_id' => env('TIMESHEET_USER'),
+
     // Dropdown values (same as your Google Sheet). Edit freely.
     'modules' => ['FlowPO', 'XOSP', 'QBSP', 'SHOPIFY ADMIN', 'Session', 'Other', 'Meeting', 'R&D', 'MMAPPS ADMIN','FLOWPO ADMIN', 'SHOPIFY SUMMARY'],
 
@@ -39,7 +42,7 @@ return [
     // Google Form auto-fill (Playwright, see form-filler/)
     'google_form' => [
         'url' => env('GOOGLE_FORM_URL'),
-        'name' => env('GOOGLE_FORM_NAME', '01 - test user'),   // must match the "Name" dropdown exactly
+        'name' => env('GOOGLE_FORM_NAME', '01 - Your Name'),   // must match the "Name" dropdown exactly
         'email' => env('JIRA_EMAIL'),                     // only used if the form has a typed Email box
         'node' => env('NODE_BINARY', 'node'),                    // full path if "node" isn't found, e.g. /opt/homebrew/bin/node
         'headless' => (bool) env('GOOGLE_FORM_HEADLESS', false), // false = you see Chrome filling the form
