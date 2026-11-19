@@ -21,6 +21,7 @@
                 </form>
             </div>
         </div>
+        <div id="lockGuard" class="msg muted" style="margin:-10px 0 16px" data-pause-url="{{ route('entries.pause', $running) }}"></div>
     @endif
 
     <div class="card">

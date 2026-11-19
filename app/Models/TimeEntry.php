@@ -61,10 +61,11 @@ class TimeEntry extends Model
         }
     }
 
-    public function pause(): void
+    public function pause(?Carbon $at = null): void
     {
         if ($this->running_since) {
-            $this->seconds = $this->totalSeconds();
+            $end = $at && $at->between($this->running_since, Carbon::now()) ? $at : Carbon::now();
+            $this->seconds += (int) $this->running_since->diffInSeconds($end, true);
             $this->running_since = null;
             $this->save();
         }

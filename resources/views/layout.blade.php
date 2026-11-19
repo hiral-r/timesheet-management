@@ -50,6 +50,7 @@
     </style>
 </head>
 <body>
+<div id="lockGate" style="position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-size:16px">Checking lock permission…</div>
 <header class="top">
     <h1><a href="{{ route('entries.index') }}">⏱ Timesheet</a></h1>
     <span>
@@ -87,6 +88,39 @@
         }
         tick(); setInterval(tick, 1000);
     })();
+</script>
+<script>
+// The app opens only after Chrome may detect a locked screen; locking stops the running timer.
+(async () => {
+    const gate = document.getElementById('lockGate'), note = document.getElementById('lockGuard');
+    const lock = (msg) => { gate.style.display = msg ? 'flex' : 'none'; if (msg) gate.innerHTML = msg; };
+
+    if (!('IdleDetector' in window)) return lock('🔒 This app needs Chrome/Edge and a secure address (open via http://localhost/…).');
+
+    const watch = async () => {
+        const d = new IdleDetector();
+        const stop = (at) => fetch(note.dataset.pauseUrl, { method: 'POST', body: new URLSearchParams({ at }), redirect: 'manual', keepalive: true,
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content } });
+        d.onchange = () => {
+            if (!note) return;
+            if (d.screenState === 'locked') stop(note.dataset.stopped = Date.now());
+            else if (note.dataset.stopped) location.reload();
+        };
+        // Sleep: the page is frozen, so on wake there's a gap in ticks -> stop at the lock time or the last tick
+        let last = Date.now();
+        setInterval(() => {
+            if (note && Date.now() - last > 180000) stop(note.dataset.stopped || last).finally(() => location.reload());
+            last = Date.now();
+        }, 10000);
+        await d.start({ threshold: 60000 });
+        lock(null);
+    };
+
+    if ((await navigator.permissions.query({ name: 'idle-detection' })).state === 'granted') return watch();
+    lock('<div>🔒 Allow auto-stop on lock to use the timesheet.<br><br><button type="button" class="btn primary">Allow</button></div>');
+    gate.querySelector('button').onclick = async () => (await IdleDetector.requestPermission()) === 'granted'
+        ? watch() : lock('🔒 Permission blocked. Click the icon left of the address bar → Site settings → Idle detection → Allow, then reload.');
+})();
 </script>
 @stack('scripts')
 </body>

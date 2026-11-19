@@ -122,7 +122,7 @@ class TimeEntryController extends Controller
 
     public function pause(Request $request, TimeEntry $entry): RedirectResponse
     {
-        $entry->pause();
+        $entry->pause($request->filled('at') ? Carbon::createFromTimestampMs((int) $request->input('at')) : null);
 
         return back()->with('status', 'Timer stopped at '.$entry->duration.'.');
     }
