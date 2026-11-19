@@ -52,7 +52,10 @@
 <body>
 <header class="top">
     <h1><a href="{{ route('entries.index') }}">⏱ Timesheet</a></h1>
-    <span>{{ now()->format('D, d M Y') }}</span>
+    <span>
+        👤 {{ config('timesheet.google_form.name') ?: 'User '.config('timesheet.user_id') }}
+        &nbsp;·&nbsp; {{ now()->format('D, d M Y') }}
+    </span>
 </header>
 <main>
     @if (session('status'))

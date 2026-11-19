@@ -22,6 +22,15 @@ class TimeEntry extends Model
         ];
     }
 
+    /** Shared DB: only the current user's rows (TIMESHEET_USER in .env) are visible; new rows get that user_id. */
+    protected static function booted(): void
+    {
+        $userId = fn () => config('timesheet.user_id') ?: throw new \RuntimeException('Set TIMESHEET_USER (your employee code) in .env, then run: php artisan config:clear');
+
+        static::addGlobalScope('user', fn ($query) => $query->where('time_entries.user_id', $userId()));
+        static::creating(fn (TimeEntry $entry) => $entry->user_id ??= $userId());
+    }
+
     public function isRunning(): bool
     {
         return $this->running_since !== null;
